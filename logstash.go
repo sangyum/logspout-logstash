@@ -84,7 +84,7 @@ func (a *LogstashAdapter) Stream(logstream chan *router.Message) {
 			}
 		}
 		n := bytes.IndexByte(js, 0)
-		s := string(byteArray[:n])
+		s := string(js[:n])
 		debug("logstash:Ready to write", s)
 		_, err = a.conn.Write(js)
 		if err != nil {
