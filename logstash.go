@@ -5,7 +5,6 @@ import (
 	"errors"
 	"log"
 	"net"
-	"bytes"
 	"os"
 	"github.com/gliderlabs/logspout/router"
 )
@@ -83,9 +82,7 @@ func (a *LogstashAdapter) Stream(logstream chan *router.Message) {
 				continue
 			}
 		}
-		n := bytes.IndexByte(js, 0)
-		s := string(js[:n])
-		debug("logstash:Ready to write", s)
+		debug("logstash:Ready to write")
 		_, err = a.conn.Write(js)
 		if err != nil {
 			debug("logstash:", err)
