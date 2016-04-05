@@ -32,8 +32,8 @@ func NewLogstashAdapter(route *router.Route) (router.LogAdapter, error) {
 		return nil, errors.New("unable to find adapter: " + route.Adapter)
 	}
 
-	debug('ROUTE.ADDRESS', route.Address)
-	debug('ROUTE.OPTIONS', route.Options)
+	debug("ROUTE.ADDRESS", route.Address)
+	debug("ROUTE.OPTIONS", route.Options)
 
 	conn, err := transport.Dial(route.Address, route.Options)
 	if err != nil {
