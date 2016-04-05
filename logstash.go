@@ -13,6 +13,12 @@ func init() {
 	router.AdapterFactories.Register(NewLogstashAdapter, "logstash")
 }
 
+func debug(v ...interface{}) {
+	if os.Getenv("DEBUG") != "" {
+		log.Println(v...)
+	}
+}
+
 // LogstashAdapter is an adapter that streams TCP JSON to Logstash.
 type LogstashAdapter struct {
 	conn  net.Conn
@@ -49,38 +55,37 @@ func (a *LogstashAdapter) Stream(logstream chan *router.Message) {
 		var js []byte
 
 		var jsonMsg map[string]interface{}
-		log.Println(1)
+		debug("logstash:Received Msg:", m.Data)
 		err := json.Unmarshal([]byte(m.Data), &jsonMsg)
 		if err != nil {
-			log.Println(2)
+			debug("logstash:Non-JSON msg", m.Data)
 			// the message is not in JSON make a new JSON message
 			msg := LogstashMessage{
 				Message: m.Data,
 				Docker:  dockerInfo,
 			}
 			
-			log.Println("3", msg)
+			debug("logstash:Constructed LogstashMessage", msg)
 			js, err = json.Marshal(msg)
 			if err != nil {
-				log.Println("logstash:", err)
+				debug("logstash:", err)
 				continue
 			}
 		} else {
-			log.Println("4")
+			debug("logstash:JSON msg", jsonMsg)
 			// the message is already in JSON just add the docker specific fields as a nested structure
 			jsonMsg["docker"] = dockerInfo
 
 			js, err = json.Marshal(jsonMsg)
-			log.Println("5")
 			if err != nil {
-				log.Println("logstash:", err)
+				debug("logstash:", err)
 				continue
 			}
 		}
-		log.Println("6")
+		debug("logstash:Ready to write:", js)
 		_, err = a.conn.Write(js)
 		if err != nil {
-			log.Println("logstash:", err)
+			debug("logstash:", err)
 			continue
 		}
 	}
