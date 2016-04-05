@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net"
+	"bytes"
 	"os"
 	"github.com/gliderlabs/logspout/router"
 )
