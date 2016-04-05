@@ -55,17 +55,17 @@ func (a *LogstashAdapter) Stream(logstream chan *router.Message) {
 		var js []byte
 
 		var jsonMsg map[string]interface{}
-		debug("logstash:Received Msg:", m.Data)
+		debug("logstash:Received Msg")
 		err := json.Unmarshal([]byte(m.Data), &jsonMsg)
 		if err != nil {
-			debug("logstash:Non-JSON msg", m.Data)
+			debug("logstash:Non-JSON msg")
 			// the message is not in JSON make a new JSON message
 			msg := LogstashMessage{
 				Message: m.Data,
 				Docker:  dockerInfo,
 			}
 			
-			debug("logstash:Constructed LogstashMessage", msg)
+			debug("logstash:Constructed LogstashMessage")
 			js, err = json.Marshal(msg)
 			if err != nil {
 				debug("logstash:", err)
@@ -82,7 +82,9 @@ func (a *LogstashAdapter) Stream(logstream chan *router.Message) {
 				continue
 			}
 		}
-		debug("logstash:Ready to write:", js)
+		n := bytes.IndexByte(js, 0)
+		s := string(byteArray[:n])
+		debug("logstash:Ready to write", s)
 		_, err = a.conn.Write(js)
 		if err != nil {
 			debug("logstash:", err)
